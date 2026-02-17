@@ -1,5 +1,7 @@
 import express from "express";
 import Thread from "../models/Thread.js";
+import getGenAIAPIResponse from "../utils/genai.js";
+
 const router = express.Router();
 
 //test
@@ -57,6 +59,45 @@ router.delete("/thread/:threadId", async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "Failed to delete thread" });
+  }
+});
+
+router.post("/chat", async (req, res) => {
+  const { threadId, message } = req.body;
+
+  if (!threadId || !message) {
+    return res.status(400).json({ error: "missing required fields" });
+  }
+  try {
+    let thread = await Thread.findOne({ threadId });
+    const userMessage =
+      typeof message === "string" ? message : JSON.stringify(message);
+    if (!thread) {
+      //create a new thread in db
+      thread = new Thread({
+        threadId,
+        title: userMessage,
+        messages: [{ role: "user", content: userMessage }],
+      });
+    } else {
+      thread.messages.push({ role: "user", content: userMessage });
+    }
+    const assistantReply = await getGenAIAPIResponse(userMessage);
+
+    thread.messages.push({
+      role: "assistant",
+      content:
+        typeof assistantReply === "string"
+          ? assistantReply.text
+          : JSON.stringify(assistantReply.text),
+    });
+    thread.updatedAt = new Date();
+
+    await thread.save();
+    res.json({ reply: assistantReply.text });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "something went wrong" });
   }
 });
 export default router;
