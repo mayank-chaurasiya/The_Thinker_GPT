@@ -1,6 +1,23 @@
 import "./Sidebar.css";
+import { useContext, useEffect } from "react";
+import { MyContext } from "../Context/MyContext";
 
 const Sidebar = () => {
+  const { allThreads, setAllThreads, currThreadId } = useContext(MyContext);
+  const getAllThreads = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/api/thread");
+      const res = await response.json();
+      console.log(res);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    getAllThreads();
+  }, [currThreadId]);
+
   return (
     <section className="sidebar">
       <button>
