@@ -1,3 +1,18 @@
+/* Custom scrollbar styles */
+::-webkit-scrollbar {
+  width: 8px;
+  background: #000;
+}
+::-webkit-scrollbar-thumb {
+  background: #000;
+  border-radius: 4px;
+}
+
+/* For Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #000 #000;
+}
 .chats {
   max-width: 700px;
   height: 400px;

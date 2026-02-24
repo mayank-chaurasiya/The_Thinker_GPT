@@ -14,12 +14,15 @@ const ChatWindow = () => {
     currThreadId,
     prevChats,
     setPrevChats,
+    setNewChat,
   } = useContext(MyContext);
   const [loading, setLoading] = useState(false);
   const chatsContainerRef = useRef(null);
+  const [isOpen, setIsOpen] = useState(false);
 
   const getReply = async () => {
     setLoading(true);
+    setNewChat(false);
 
     const options = {
       method: "POST",
@@ -68,18 +71,30 @@ const ChatWindow = () => {
     }
   }, [prevChats, loading]);
 
+  const handleProfileClick = () => {
+    setIsOpen(!isOpen);
+  };
+
   return (
     <div className="chat-window">
       <div className="navbar">
         <span>
           Think GPT &nbsp;<i className="fa-solid fa-chevron-down"></i>
         </span>
-        <div className="user-icon">
+        <div className="user-icon" onClick={handleProfileClick}>
           <span className="user-icon-logo">
             <i className="fa-solid fa-user"></i>
           </span>
         </div>
       </div>
+      {isOpen && (
+        <div className="dropDown">
+          <div className="dropDownItem">
+            <i className="fa-solid fa-arrow-right-from-bracket"></i>&nbsp;Log
+            Out
+          </div>
+        </div>
+      )}
       {/* Pass ref to Chat for scrollable container */}
       <div style={{ width: "100%" }}>
         <Chat chatsContainerRef={chatsContainerRef} />

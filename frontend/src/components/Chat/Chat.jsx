@@ -10,6 +10,10 @@ const Chat = ({ chatsContainerRef }) => {
   const [latestReply, setLatestReply] = useState(null);
 
   useEffect(() => {
+    if (reply === null) {
+      setLatestReply(null);
+      return;
+    }
     if (!prevChats?.length) return;
 
     const content = reply.split(" "); // get individual words
@@ -39,18 +43,28 @@ const Chat = ({ chatsContainerRef }) => {
             {chat.role === "user" ? (
               <p className="userMessage">{chat.content}</p>
             ) : (
-              <ReactMarkdown rehypeHighlight={rehypeHighlight}>
+              <ReactMarkdown rehypePlugins={[rehypeHighlight]}>
                 {chat.content}
               </ReactMarkdown>
             )}
           </div>
         ))}
-        {prevChats.length > 0 && latestReply != null && (
-          <div className="gptDiv" key={"typing"}>
-            <ReactMarkdown rehypeHighlight={rehypeHighlight}>
-              {latestReply}
-            </ReactMarkdown>
-          </div>
+        {prevChats.length > 0 && (
+          <>
+            {latestReply === null ? (
+              <div className="gptDiv" key={"typing"}>
+                <ReactMarkdown rehypePlugins={[rehypeHighlight]}>
+                  {prevChats[prevChats.length - 1].content}
+                </ReactMarkdown>
+              </div>
+            ) : (
+              <div className="gptDiv" key={"typing"}>
+                <ReactMarkdown rehypePlugins={[rehypeHighlight]}>
+                  {latestReply}
+                </ReactMarkdown>
+              </div>
+            )}
+          </>
         )}
       </div>
     </>

@@ -84,12 +84,12 @@ router.post("/chat", async (req, res) => {
     }
     const assistantReply = await getGenAIAPIResponse(userMessage);
 
+    // Always save the assistant reply as Markdown text
     thread.messages.push({
       role: "assistant",
       content:
-        typeof assistantReply === "string"
-          ? assistantReply.text
-          : JSON.stringify(assistantReply.text),
+        assistantReply.text ||
+        (typeof assistantReply === "string" ? assistantReply : ""),
     });
     thread.updatedAt = new Date();
 
